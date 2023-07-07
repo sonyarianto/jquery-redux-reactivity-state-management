@@ -1,0 +1,27 @@
+<!DOCTYPE html>
+<html lang="en">
+  <head>
+    <title>jQuery with Redux for State Management and Reactivity</title>
+    <meta charset="UTF-8" />
+    <meta name="viewport" content="width=device-width" />
+  </head>
+  <body>
+    <div>
+      <div style="margin-bottom:10px;">
+        <input id="first_name_input" type="text" val="" placeholder="Full name" />
+        <input id="last_name_input" type="text" val="" placeholder="Last name"/>
+      </div>
+      <div style="display:flex;margin-bottom:10px;">My full name is&nbsp;<div><span id="first_name"></span> <span id="last_name"></div></div>
+    </div>
+    <hr style="border-bottom:1px solid #eee;" />
+    <div style="margin-bottom:10px;">Reactive Counter</div>
+    <div style="display:flex;gap:0px 10px;">
+      <button type="button" id="decrement_button">decrement</button>
+      <span id="counter" style="font-size:80px;">0</span>
+      <button type="button" id="increment_button">increment</button>
+    </div>
+    <script src="https://cdn.jsdelivr.net/npm/jquery@3.7.0/dist/jquery.min.js"></script>
+    <script src="https://cdn.jsdelivr.net/npm/redux@4.2.1/dist/redux.min.js"></script>
+    <script src="./script.js"></script>
+  </body>
+</html>
