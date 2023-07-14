@@ -1,0 +1,105 @@
+<!DOCTYPE html>
+<html lang="en">
+  <head>
+    <title>jQuery + Redux = Joy of Life - Reactivity and State Management</title>
+    <meta charset="UTF-8" />
+    <meta name="viewport" content="width=device-width" />
+  </head>
+  <body>
+    <a href="/index.html">Home</a>
+    <br/>
+    <br/>
+    <div>
+      <div style="margin-bottom:10px;">
+        <input id="first_name_input" type="text" val="" placeholder="Full name" />
+        <input id="last_name_input" type="text" val="" placeholder="Last name"/>
+      </div>
+      <div style="display:flex;margin-bottom:10px;">My full name is&nbsp;<div><span id="first_name"></span> <span id="last_name"></div></div>
+    </div>
+    <hr style="border-bottom:1px solid #eee;" />
+    <div style="margin-bottom:10px;">Reactive Counter</div>
+    <div style="display:flex;gap:0px 10px;">
+      <button type="button" id="decrement_button">decrement</button>
+      <span id="counter" style="font-size:80px;">0</span>
+      <button type="button" id="increment_button">increment</button>
+    </div>
+    <script src="https://cdn.jsdelivr.net/npm/jquery@3.7.0/dist/jquery.min.js"></script>
+    <script src="https://cdn.jsdelivr.net/npm/redux@4.2.1/dist/redux.min.js"></script>
+    <script>
+      // Reducer for counterState (primitive)
+
+      const counterReducer = (state = 0, actions) => {
+        switch (actions.type) {
+          case 'INCREMENT':
+            return state + 1;
+          case 'DECREMENT':
+            return state - 1;
+          default:
+            return state;
+        }
+      };
+
+      // Store for counter
+
+      const counterStore = Redux.createStore(counterReducer);
+
+      // Dispatch an action to mutate the state
+
+      $('#increment_button').click(() =>
+        counterStore.dispatch({ type: 'INCREMENT' })
+      );
+
+      $('#decrement_button').click(() =>
+        counterStore.dispatch({ type: 'DECREMENT' })
+      );
+
+      // Use subscribe() to update the UI in response to state changes
+
+      counterStore.subscribe(() => {
+        $('#counter').html(counterStore.getState());
+      });
+
+      // ---------------------------------------------------------
+
+      // Reducer for nameReducer (object)
+
+      const nameReducer = (state = {}, actions) => {
+        let { firstName = '', lastName = '' } = actions;
+
+        switch (actions.type) {
+          case 'UPDATE_FIRST_NAME':
+            return Object.assign({}, state, { firstName: firstName });
+          case 'UPDATE_LAST_NAME':
+            return Object.assign({}, state, { lastName: lastName });
+          default:
+            return state;
+        }
+      };
+
+      // Store for nameStore
+
+      const nameStore = Redux.createStore(nameReducer);
+
+      $('#first_name_input').on('input', (e) => {
+        nameStore.dispatch({
+          type: 'UPDATE_FIRST_NAME',
+          firstName: e.target.value,
+        });
+      });
+
+      $('#last_name_input').on('input', (e) => {
+        nameStore.dispatch({
+          type: 'UPDATE_LAST_NAME',
+          lastName: e.target.value,
+        });
+      });
+
+      nameStore.subscribe(() => {
+        let { firstName, lastName } = nameStore.getState();
+
+        $('#first_name').html(firstName);
+        $('#last_name').html(lastName);
+      });
+    </script>
+  </body>
+</html>

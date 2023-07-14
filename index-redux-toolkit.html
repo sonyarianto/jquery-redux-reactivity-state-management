@@ -1,0 +1,109 @@
+<!DOCTYPE html>
+<html lang="en">
+  <head>
+    <title>jQuery + Redux = Joy of Life - Reactivity and State Management</title>
+    <meta charset="UTF-8" />
+    <meta name="viewport" content="width=device-width" />
+  </head>
+  <body>
+    <a href="/index.html">Home</a>
+    <br/>
+    <br/>
+    <div>
+      <div style="margin-bottom:10px;">
+        <input id="first_name_input" type="text" val="" placeholder="Full name" />
+        <input id="last_name_input" type="text" val="" placeholder="Last name"/>
+      </div>
+      <div style="display:flex;margin-bottom:10px;">My full name is&nbsp;<div><span id="first_name"></span> <span id="last_name"></div></div>
+    </div>
+    <hr style="border-bottom:1px solid #eee;" />
+    <div style="margin-bottom:10px;">Reactive Counter</div>
+    <div style="display:flex;gap:0px 10px;">
+      <button type="button" id="decrement_button">decrement</button>
+      <span id="counter" style="font-size:80px;">0</span>
+      <button type="button" id="increment_button">increment</button>
+    </div>
+    <script src="https://cdn.jsdelivr.net/npm/jquery@3.7.0/dist/jquery.min.js"></script>
+    <script src="https://cdn.jsdelivr.net/npm/@reduxjs/toolkit@1.9.5/dist/redux-toolkit.umd.min.js"></script>
+    <script>
+      // Define the counter slice
+      
+      const counterSlice = RTK.createSlice({
+          name: 'counter',
+          initialState: 0,
+          reducers: {
+              increment: (state) => state + 1, // state is the current state and state + 1 is the new state
+              decrement: (state) => state - 1, // state is the current state and state - 1 is the new state
+              incrementByAmount: (state, action) => state + action.payload, // state is the current state and state + action.payload is the new state
+          },
+      });
+
+      // Define the full name slice
+
+      const fullNameSlice = RTK.createSlice({
+          name: 'fullName',
+          initialState: { firstName: '', lastName: '' },
+          reducers: {
+              updateFirstName: (state, action) => {
+                  state.firstName = action.payload;
+              },
+              updateLastName: (state, action) => {
+                  state.lastName = action.payload;
+              },
+          },
+      });
+
+      // Create the Redux store with the counter slice
+            
+      const store = RTK.configureStore({
+          reducer: {
+              counter: counterSlice.reducer,
+              fullName: fullNameSlice.reducer,
+          },
+      });
+
+      // Function to update the counter value in the DOM
+      
+      function updateCounterValue() {
+          const counterValue = store.getState().counter;
+          $('#counter').html(counterValue);
+      }
+
+      // Funtion to update first name and last name in the DOM
+
+      function updateFullName() {
+          const { firstName, lastName } = store.getState().fullName;
+          $('#first_name').html(firstName);
+          $('#last_name').html(lastName);
+      }
+
+      // Subscribe to store updates and update the DOM
+      
+      store.subscribe(updateCounterValue);
+      store.subscribe(updateFullName);
+
+      // Render the initial counter and full name value
+      
+      updateCounterValue();
+      updateFullName();
+
+      // Dispatch an action to mutate the state
+
+      $('#increment_button').click(() =>
+        store.dispatch(counterSlice.actions.increment())
+      );
+
+      $('#decrement_button').click(() =>
+        store.dispatch(counterSlice.actions.decrement())
+      );
+
+      $('#first_name_input').on('input', (e) => {
+        store.dispatch(fullNameSlice.actions.updateFirstName(e.target.value));
+      });
+
+      $('#last_name_input').on('input', (e) => {
+        store.dispatch(fullNameSlice.actions.updateLastName(e.target.value));
+      });
+    </script>
+  </body>
+</html>
